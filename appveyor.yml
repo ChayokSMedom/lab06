@@ -1,0 +1,26 @@
+version: 1.0.0
+image: Visual Studio 2019
+
+platform:
+  - x64
+
+configuration:
+  - Release
+
+build_script:
+  - mkdir build
+  - cd build
+  - cmake .. -G "Visual Studio 16 2019" -A x64
+  - cmake --build . --config Release
+  - cpack -G WIX
+
+artifacts:
+  - path: build/*.msi
+    name: installer
+
+deploy:
+  provider: GitHub
+  auth_token: $(GITHUB_TOKEN)
+  artifact: installer
+  on:
+    APPVEYOR_REPO_TAG: true
