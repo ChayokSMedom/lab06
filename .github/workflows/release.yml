@@ -9,11 +9,14 @@ jobs:
   build:
     runs-on: ubuntu-latest
     permissions:
-      contents: write  # Нужно для загрузки в релиз
+      contents: write
     
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+      
+      - name: Clean build directory
+        run: rm -rf _build
       
       - name: Install dependencies
         run: sudo apt-get update && sudo apt-get install -y rpm
@@ -35,7 +38,11 @@ jobs:
           cpack -G RPM || true
       
       - name: List packages
-        run: ls -la _build/*.deb _build/*.rpm || echo "No packages found"
+        run: |
+          echo "DEB packages:"
+          ls -la _build/*.deb 2>/dev/null || echo "No .deb found"
+          echo "RPM packages:"
+          ls -la _build/*.rpm 2>/dev/null || echo "No .rpm found"
       
       - name: Upload to Release
         uses: softprops/action-gh-release@v1
